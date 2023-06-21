@@ -1,0 +1,265 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Account {
+  id                String  @id
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Event {
+  id        String   @id
+  name      String
+  date      DateTime
+  link      String
+  latitude  Float
+  longitude Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  creatorId String
+  User      User     @relation(fields: [creatorId], references: [id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Note {
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  userId    String
+  id        Int      @id @default(autoincrement())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model User {
+  id             String        @id @unique
+  email          String        @unique
+  name           String?
+  image          String?
+  emailVerified  DateTime?
+  password       String?
+  orgId          String
+  conversationId String?
+  Account        Account[]
+  Application    Application[]
+  Blog           Blog[]
+  Category       Category[]
+  Component      Component[]
+  Event          Event[]
+  Group          Group[]
+  Message        Message[]
+  Note           Note[]
+  Page           Page[]
+  Project        Project[]
+  Session        Session[]
+  Tag            Tag[]
+  Conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  Organization   Organization  @relation(fields: [orgId], references: [id])
+  Workspace      Workspace[]
+  Team           Team[]        @relation("TeamToUser")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Project {
+  id          String      @id @default(uuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  name        String
+  description String
+  ownerId     String
+  type        String
+  spaceId     String
+  appId       String
+  Application Application @relation(fields: [appId], references: [id])
+  Workspace   Workspace   @relation(fields: [spaceId], references: [id])
+  Owner       User        @relation(fields: [ownerId], references: [id])
+}
+
+model Team {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String
+  ownerId     String
+  Member      User[]   @relation("TeamToUser")
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  website   String
+  phone     String
+  email     String
+  User      User[]
+}
+
+model Blog {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  content   String
+  slug      String
+  creatorId String
+  type      String
+  catId     String
+  tagId     String?
+  Tag       Tag?     @relation(fields: [tagId], references: [id])
+  Category  Category @relation(fields: [catId], references: [id], onDelete: NoAction)
+  User      User     @relation(fields: [creatorId], references: [id], onDelete: NoAction)
+}
+
+model Page {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  content   String
+  slug      String
+  creatorId String
+  type      String
+  catId     String
+  tagId     String?
+  Tag       Tag?     @relation(fields: [tagId], references: [id])
+  Category  Category @relation(fields: [catId], references: [id], onDelete: NoAction)
+  User      User     @relation(fields: [creatorId], references: [id], onDelete: NoAction)
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  content   String
+  slug      String
+  creatorId String
+  Blog      Blog[]
+  User      User     @relation(fields: [creatorId], references: [id], onDelete: NoAction)
+  Page      Page[]
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  creatorId String
+  Blog      Blog[]
+  Page      Page[]
+  User      User     @relation(fields: [creatorId], references: [id], onDelete: NoAction)
+}
+
+model Component {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  creatorId String
+  type      String
+  User      User     @relation(fields: [creatorId], references: [id], onDelete: NoAction)
+}
+
+model Workspace {
+  id          String        @id @default(uuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  name        String
+  description String
+  ownerId     String
+  Application Application[]
+  Project     Project[]
+  User        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model Application {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  name        String
+  description String
+  ownerId     String
+  spaceId     String
+  Workspace   Workspace @relation(fields: [spaceId], references: [id])
+  User        User      @relation(fields: [ownerId], references: [id], onDelete: NoAction)
+  Project     Project[]
+}
+
+model Group {
+  id             String        @id @default(uuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  name           String
+  description    String
+  private        Boolean
+  creatorId      String
+  conversationId String?
+  Conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  User           User          @relation(fields: [creatorId], references: [id])
+  Message        Message[]
+}
+
+model Message {
+  id           String       @id @default(uuid())
+  createdAt    DateTime     @default(now())
+  message      String
+  status       String
+  read         Boolean
+  convoId      String
+  senderId     String
+  starter      Boolean
+  groupId      String?
+  Group        Group?       @relation(fields: [groupId], references: [id])
+  User         User         @relation(fields: [senderId], references: [id])
+  Conversation Conversation @relation(fields: [convoId], references: [id])
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  creatorId String
+  convoType String
+  Group     Group[]
+  Message   Message[]
+  Recipient User[]
+}

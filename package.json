@@ -1,0 +1,48 @@
+{
+  "name": "d8me.live",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "build": "remix build",
+    "dev": "remix dev",
+    "start": "remix-serve build",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.15.0",
+    "@remix-run/css-bundle": "^1.17.1",
+    "@remix-run/node": "^1.17.1",
+    "@remix-run/react": "^1.17.1",
+    "@remix-run/serve": "^1.17.1",
+    "@types/bootstrap": "^5.2.6",
+    "bootstrap": "^5.3.0",
+    "isbot": "^3.6.8",
+    "jquery": "^3.7.0",
+    "lodash": "^4.17.21",
+    "node-sass": "^9.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remix-utils": "^6.4.1",
+    "remix-auth": "3.2.2",
+    "remix-auth-supabase": "4.0.0",
+    "@supabase/auth-helpers-remix": "^0.2.1",
+    "@supabase/supabase-js": "^2.25.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^1.17.1",
+    "@remix-run/eslint-config": "^1.17.1",
+    "@types/jquery": "^3.5.16",
+    "@types/lodash": "^4.14.195",
+    "@types/react": "^18.0.35",
+    "@types/react-dom": "^18.0.11",
+    "eslint": "^8.38.0",
+    "prisma": "^4.15.0",
+    "tailwindcss": "^3.3.2",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
